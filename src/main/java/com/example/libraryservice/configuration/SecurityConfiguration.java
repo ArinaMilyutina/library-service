@@ -1,4 +1,4 @@
-package com.example.libraryservice.security;
+package com.example.libraryservice.configuration;
 
 
 import com.example.libraryservice.jwt.JWTTokenFilter;
