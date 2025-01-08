@@ -38,7 +38,7 @@ public class LibraryService {
         libraryEntry.setUserID(userRequest.getUserId());
         libraryEntry.setBookID(bookRequest.getBookId());
         libraryEntry.setBorrowDate(LocalDateTime.now());
-        libraryEntry.setReturnDate(libraryEntry.getReturnDate());
+        libraryEntry.setExpectedReturnDate(libraryEntry.getExpectedReturnDate());
         bookClient.updateBookStatus(ISBN);
         return libraryRepository.save(libraryEntry);
     }

@@ -23,5 +23,6 @@ public class Library {
     @Column(name = "user_id")
     private Long userID;
     private LocalDateTime borrowDate;
-    private LocalDateTime returnDate;
+    private LocalDateTime expectedReturnDate;
+
 }
