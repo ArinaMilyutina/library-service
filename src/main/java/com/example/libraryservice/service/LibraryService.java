@@ -27,9 +27,9 @@ public class LibraryService {
     private BookClient bookClient;
 
 
-    public Library takeTheBook(String username, String ISBN, LibraryDto libraryDto) {
-        UserRequest userRequest = userClient.findByUsername(username);
-        BookRequest bookRequest = bookClient.findByISBN(ISBN);
+    public Library takeTheBook(Long userId, Long bookId, LibraryDto libraryDto) {
+        UserRequest userRequest = userClient.findById(userId);
+        BookRequest bookRequest = bookClient.findById(bookId);
         Optional<Library> optionalLibrary = checkingTheBook(bookRequest.getBookId());
         if (optionalLibrary.isPresent()) {
             throw new BookAlreadyCheckedOutException(BOOK_ALREADY_CHECKED_OUT);
@@ -39,9 +39,10 @@ public class LibraryService {
         libraryEntry.setBookID(bookRequest.getBookId());
         libraryEntry.setBorrowDate(LocalDateTime.now());
         libraryEntry.setExpectedReturnDate(libraryEntry.getExpectedReturnDate());
-        bookClient.updateBookStatus(ISBN);
+        bookClient.updateBookStatus(bookId);
         return libraryRepository.save(libraryEntry);
     }
+
 
     public Optional<Library> checkingTheBook(Long id) {
         return libraryRepository.findByBookID(id);

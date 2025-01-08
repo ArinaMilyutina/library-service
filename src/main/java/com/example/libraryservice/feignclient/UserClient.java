@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(name = "library2")
 public interface UserClient {
-    @GetMapping("/user/find-by-username/{username}")
-    UserRequest findByUsername(@PathVariable String username);
+    @GetMapping("/user/find-by-id/{id}")
+    UserRequest findById(@PathVariable Long id);
 }
