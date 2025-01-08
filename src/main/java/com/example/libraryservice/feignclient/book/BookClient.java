@@ -1,4 +1,4 @@
-package com.example.libraryservice.feignclient;
+package com.example.libraryservice.feignclient.book;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

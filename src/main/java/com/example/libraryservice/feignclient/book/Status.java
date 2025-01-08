@@ -1,4 +1,4 @@
-package com.example.libraryservice.feignclient;
+package com.example.libraryservice.feignclient.book;
 
 public enum Status {
     AVAILABLE,

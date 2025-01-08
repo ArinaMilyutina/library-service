@@ -1,4 +1,4 @@
-package com.example.libraryservice.feignclient;
+package com.example.libraryservice.feignclient.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
