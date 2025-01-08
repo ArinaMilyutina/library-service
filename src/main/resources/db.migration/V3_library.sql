@@ -41,3 +41,10 @@ CREATE TABLE library_service_schema.library
     borrow_date TIMESTAMP NOT NULL,
     return_date TIMESTAMP
 );
+ALTER TABLE library_service_schema.library
+    ADD COLUMN actual_return_date TIMESTAMP;
+
+ALTER TABLE library_service_schema.library
+    RENAME COLUMN return_date TO expected_return_date;
+
+
