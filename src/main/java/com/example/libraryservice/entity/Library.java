@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "library",schema = "library_service_schema")
+@Table(name = "library", schema = "library_service_schema")
 @Data
 @Builder
 @AllArgsConstructor
@@ -24,5 +24,5 @@ public class Library {
     private Long userID;
     private LocalDateTime borrowDate;
     private LocalDateTime expectedReturnDate;
-
+    private LocalDateTime actualReturnDate;
 }
