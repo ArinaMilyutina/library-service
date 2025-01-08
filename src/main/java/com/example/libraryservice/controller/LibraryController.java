@@ -18,12 +18,19 @@ public class LibraryController {
     private LibraryService libraryService;
 
     @PreAuthorize(value = "hasRole('ADMIN')")
-    @PostMapping("/admin/create")
+    @PostMapping("/admin/take-book")
     public ResponseEntity<Library> takeTheBook(@RequestParam Long userId, @RequestParam Long bookId, @Valid @RequestBody LibraryDto libraryDto) throws NotFoundException {
-        Library libraryEntry = libraryService.takeTheBook(userId,bookId,libraryDto);
+        Library libraryEntry = libraryService.takeTheBook(userId, bookId, libraryDto);
         return ResponseEntity.ok(libraryEntry);
     }
-    
+
+    @PreAuthorize(value = "hasRole('ADMIN')")
+    @GetMapping("/admin/return-book/{bookId}")
+    public ResponseEntity<Library> returnTheBook(@PathVariable Long bookId) {
+        Library library = libraryService.returnTheBook(bookId);
+        return ResponseEntity.ok(library);
+    }
+
 
  /*   @GetMapping("/available-books")
     public ResponseEntity<List<Book>> getAvailableBooks() throws NotFoundException {
