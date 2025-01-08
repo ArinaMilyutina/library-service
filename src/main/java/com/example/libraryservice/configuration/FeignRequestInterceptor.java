@@ -1,4 +1,4 @@
-package com.example.libraryservice.security;
+package com.example.libraryservice.configuration;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
