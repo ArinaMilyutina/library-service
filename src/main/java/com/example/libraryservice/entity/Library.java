@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "library")
+@Table(name = "library",schema = "library_service_schema")
 @Data
 @Builder
 @AllArgsConstructor
@@ -18,11 +18,10 @@ public class Library {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @JoinColumn(name = "book_id", nullable = false)
+    @Column(name = "book_id")
     private Long bookID;
-    @JoinColumn(name = "user_id", nullable = false)
+    @Column(name = "user_id")
     private Long userID;
-
     private LocalDateTime borrowDate;
     private LocalDateTime returnDate;
 }
