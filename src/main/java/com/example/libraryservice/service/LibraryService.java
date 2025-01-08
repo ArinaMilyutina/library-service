@@ -3,12 +3,10 @@ package com.example.libraryservice.service;
 import com.example.libraryservice.dto.LibraryDto;
 import com.example.libraryservice.entity.Library;
 import com.example.libraryservice.exception.BookAlreadyCheckedOutException;
-import com.example.libraryservice.feignclient.BookClient;
-import com.example.libraryservice.feignclient.BookRequest;
-import com.example.libraryservice.feignclient.UserClient;
-import com.example.libraryservice.feignclient.UserRequest;
+import com.example.libraryservice.feignclient.*;
 import com.example.libraryservice.mapper.LibraryMapper;
 import com.example.libraryservice.repository.LibraryRepository;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,24 +25,32 @@ public class LibraryService {
     private BookClient bookClient;
 
 
-    public Library takeTheBook(Long userId, Long bookId, LibraryDto libraryDto) {
+    public Library takeTheBook(Long userId, Long bookId, LibraryDto libraryDto) throws FeignException.NotFound {
         UserRequest userRequest = userClient.findById(userId);
         BookRequest bookRequest = bookClient.findById(bookId);
-        Optional<Library> optionalLibrary = checkingTheBook(bookRequest.getBookId());
-        if (optionalLibrary.isPresent()) {
+        if (bookRequest.getStatus().contains(Status.UNAVAILABLE)) {
             throw new BookAlreadyCheckedOutException(BOOK_ALREADY_CHECKED_OUT);
         }
         Library libraryEntry = LibraryMapper.INSTANCE.LibraryDtoToLibrary(libraryDto);
         libraryEntry.setUserID(userRequest.getUserId());
         libraryEntry.setBookID(bookRequest.getBookId());
         libraryEntry.setBorrowDate(LocalDateTime.now());
-        libraryEntry.setExpectedReturnDate(libraryEntry.getExpectedReturnDate());
+        libraryEntry.setExpectedReturnDate(libraryDto.getExpectedReturnDate());
         bookClient.updateBookStatus(bookId);
         return libraryRepository.save(libraryEntry);
     }
 
+    public Library returnTheBook(Long bookId) {
+        Optional<Library> optionalLibrary = libraryRepository.findByBookID(bookId);
+        Library library = optionalLibrary.get();
+        library.setActualReturnDate(LocalDateTime.now());
+        if (library.getActualReturnDate().isAfter(library.getExpectedReturnDate())) {
 
-    public Optional<Library> checkingTheBook(Long id) {
-        return libraryRepository.findByBookID(id);
+        }
+        libraryRepository.save(library);
+        bookClient.updateBookStatus(bookId);
+
+        return library;
     }
+
 }
