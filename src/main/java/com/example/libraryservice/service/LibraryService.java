@@ -1,6 +1,8 @@
 package com.example.libraryservice.service;
 
-import com.example.libraryservice.dto.LibraryDto;
+import com.example.libraryservice.dto.LibraryRequest;
+import com.example.libraryservice.dto.LibraryResponse;
+import com.example.libraryservice.dto.ResponseMsg;
 import com.example.libraryservice.entity.Library;
 import com.example.libraryservice.exception.BookAlreadyCheckedOutException;
 import com.example.libraryservice.feignclient.book.BookClient;
@@ -29,32 +31,41 @@ public class LibraryService {
     private BookClient bookClient;
 
 
-    public Library takeTheBook(Long userId, Long bookId, LibraryDto libraryDto) throws FeignException.NotFound {
+    public LibraryResponse takeTheBook(Long userId, Long bookId, LibraryRequest libraryRequest) throws FeignException.NotFound {
         UserRequest userRequest = userClient.findById(userId);
         BookRequest bookRequest = bookClient.findById(bookId);
         if (bookRequest.getStatus().contains(Status.UNAVAILABLE)) {
             throw new BookAlreadyCheckedOutException(BOOK_ALREADY_CHECKED_OUT);
         }
-        Library libraryEntry = LibraryMapper.INSTANCE.LibraryDtoToLibrary(libraryDto);
+        Library libraryEntry = LibraryMapper.INSTANCE.LibraryDtoToLibrary(libraryRequest);
         libraryEntry.setUserID(userRequest.getUserId());
         libraryEntry.setBookID(bookRequest.getBookId());
         libraryEntry.setBorrowDate(LocalDateTime.now());
-        libraryEntry.setExpectedReturnDate(libraryDto.getExpectedReturnDate());
+        libraryEntry.setExpectedReturnDate(libraryRequest.getExpectedReturnDate());
         bookClient.updateBookStatus(bookId);
-        return libraryRepository.save(libraryEntry);
+        libraryRepository.save(libraryEntry);
+        return LibraryResponse.builder()
+                .username(userRequest.getUsername())
+                .title(bookRequest.getTitle())
+                .borrowDate(libraryEntry.getBorrowDate())
+                .expectedReturnDate(libraryEntry.getExpectedReturnDate())
+                .build();
     }
 
-    public Library returnTheBook(Long bookId) {
+    public ResponseMsg returnTheBook(Long bookId) {
         Optional<Library> optionalLibrary = libraryRepository.findByBookID(bookId);
         Library library = optionalLibrary.get();
         library.setActualReturnDate(LocalDateTime.now());
         if (library.getActualReturnDate().isAfter(library.getExpectedReturnDate())) {
-
+            return ResponseMsg.builder()
+                    .msg("The book is overdue, you need to pay a fine!")
+                    .build();
         }
         libraryRepository.save(library);
         bookClient.updateBookStatus(bookId);
-
-        return library;
+        return ResponseMsg.builder()
+                .msg("The book was successfully returned!")
+                .build();
     }
 
 }

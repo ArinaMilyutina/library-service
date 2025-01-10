@@ -1,7 +1,8 @@
 package com.example.libraryservice.controller;
 
-import com.example.libraryservice.dto.LibraryDto;
-import com.example.libraryservice.entity.Library;
+import com.example.libraryservice.dto.LibraryRequest;
+import com.example.libraryservice.dto.LibraryResponse;
+import com.example.libraryservice.dto.ResponseMsg;
 import com.example.libraryservice.exception.NotFoundException;
 import com.example.libraryservice.service.LibraryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,22 +20,14 @@ public class LibraryController {
 
     @PreAuthorize(value = "hasRole('ADMIN')")
     @PostMapping("/admin/take-book")
-    public ResponseEntity<Library> takeTheBook(@RequestParam Long userId, @RequestParam Long bookId, @Valid @RequestBody LibraryDto libraryDto) throws NotFoundException {
-        Library libraryEntry = libraryService.takeTheBook(userId, bookId, libraryDto);
-        return ResponseEntity.ok(libraryEntry);
+    public ResponseEntity<LibraryResponse> takeTheBook(@RequestParam Long userId, @RequestParam Long bookId, @Valid @RequestBody LibraryRequest libraryRequest) throws NotFoundException {
+        return ResponseEntity.ok(libraryService.takeTheBook(userId, bookId, libraryRequest));
     }
 
     @PreAuthorize(value = "hasRole('ADMIN')")
     @GetMapping("/admin/return-book/{bookId}")
-    public ResponseEntity<Library> returnTheBook(@PathVariable Long bookId) {
-        Library library = libraryService.returnTheBook(bookId);
-        return ResponseEntity.ok(library);
+    public ResponseEntity<ResponseMsg> returnTheBook(@PathVariable Long bookId) {
+        return ResponseEntity.ok(libraryService.returnTheBook(bookId));
     }
 
-
- /*   @GetMapping("/available-books")
-    public ResponseEntity<List<Book>> getAvailableBooks() throws NotFoundException {
-        List<Book> availableBooks = libraryService.getAvailableBooks();
-        return ResponseEntity.ok(availableBooks);
-    }*/
 }

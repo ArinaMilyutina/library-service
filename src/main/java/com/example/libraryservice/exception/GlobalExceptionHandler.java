@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleFeignNotFound(FeignException.NotFound ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body("Incorrect username or ISBN!");
+                .body("Resource not found: " + ex.getMessage());
     }
 
 }
