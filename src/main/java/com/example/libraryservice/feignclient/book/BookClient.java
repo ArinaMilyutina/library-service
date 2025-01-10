@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "books-service")
 public interface BookClient {
 
-    @GetMapping("/book/find-by-id/{id}")
+    @GetMapping("/external/book/find-by-id/{id}")
     BookRequest findById(@PathVariable("id") Long id);
 
-    @GetMapping("/book/status/{id}")
+    @GetMapping("/external/book/status/{id}")
     void updateBookStatus(@PathVariable("id") Long id);
 }
