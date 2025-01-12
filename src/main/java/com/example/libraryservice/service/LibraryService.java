@@ -5,6 +5,7 @@ import com.example.libraryservice.dto.LibraryResponse;
 import com.example.libraryservice.dto.ResponseMsg;
 import com.example.libraryservice.entity.Library;
 import com.example.libraryservice.exception.BookAlreadyCheckedOutException;
+import com.example.libraryservice.exception.NotFoundException;
 import com.example.libraryservice.feignclient.book.BookClient;
 import com.example.libraryservice.feignclient.book.BookRequest;
 import com.example.libraryservice.feignclient.book.Status;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 
@@ -52,8 +54,11 @@ public class LibraryService {
                 .build();
     }
 
-    public ResponseMsg returnTheBook(Long bookId) {
-        Optional<Library> optionalLibrary = libraryRepository.findByBookID(bookId);
+    public ResponseMsg returnTheBook(Long bookId) throws NotFoundException {
+        Optional<Library> optionalLibrary = libraryRepository.findByBookIDAndActualReturnDate(bookId, null);
+        if(optionalLibrary.isEmpty()){
+            throw new NoSuchElementException( "Book not found!");
+        }
         Library library = optionalLibrary.get();
         library.setActualReturnDate(LocalDateTime.now());
         if (library.getActualReturnDate().isAfter(library.getExpectedReturnDate())) {
