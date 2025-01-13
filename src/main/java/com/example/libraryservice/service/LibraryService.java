@@ -62,6 +62,7 @@ public class LibraryService {
         Library library = optionalLibrary.get();
         library.setActualReturnDate(LocalDateTime.now());
         if (library.getActualReturnDate().isAfter(library.getExpectedReturnDate())) {
+            libraryRepository.save(library);
             return ResponseMsg.builder()
                     .msg("The book is overdue, you need to pay a fine!")
                     .build();
