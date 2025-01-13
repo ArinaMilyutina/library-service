@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,7 +22,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfiguration {
     private static final String ADMIN = "ADMIN";
-    private static final String BOOK_ENDPOINT = "/library/**";
+    private static final String LIBRARY_ENDPOINT = "/library/**";
+    private static final String DB = "/db/**";
+
+    private static final String[] PUBLIC_URLS = {
+            "/v3/api-docs/**",
+            "/swagger-ui.html",
+            "/swagger-resources/**",
+            "configuration/**",
+            "webjars/**",
+            "/*.html",
+            "/**/*.html",
+            "/**/*.css",
+            "/**/*.js"
+    };
 
     @Bean
     public JWTTokenFilter jwtTokenFilter() {
@@ -36,8 +50,10 @@ public class SecurityConfiguration {
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .antMatchers(BOOK_ENDPOINT).hasAuthority(ADMIN)
-                        .anyRequest().permitAll()
+                        .antMatchers(HttpMethod.GET, PUBLIC_URLS).permitAll()
+                        .antMatchers(DB).permitAll()
+                        .antMatchers(LIBRARY_ENDPOINT).hasAuthority(ADMIN)
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
